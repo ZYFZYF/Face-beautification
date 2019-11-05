@@ -2,20 +2,20 @@ package com.example.face_beautification;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
-
-import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 public class RemoteApi {
@@ -30,7 +30,7 @@ public class RemoteApi {
             put("api_key", API_KEY);
             put("api_secret", API_SECRET);
             put("return_landmark", "all");
-            //put("image_base64", base64Img);
+            put("image_base64", base64Img);
             //put("image_file", "@" + TEST_IMAGE_FILE);
         }};
         return HttpPostUrl.sendPost(THOUSAND_LANDMARK_API, paramMap);
@@ -135,58 +135,26 @@ class HttpPostUrl {
      * @return 成功:返回json字符串<br/>
      */
     public static String sendPost(String strURL, Map<String, String> params) {
-        try {
-            URL url = new URL(strURL);// 创建连接
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setInstanceFollowRedirects(true);
-            connection.setRequestMethod("POST"); // 设置请求方式
-            connection.setRequestProperty("Accept", "application/json"); // 设置接收数据的格式
-            connection.setRequestProperty("Content-Type", "application/json"); // 设置发送数据的格式
-            connection.setRequestProperty("accept", "*/*");
-            connection.setRequestProperty("connection", "Keep-Alive");
-            connection.setRequestProperty("user-agent",
-                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-            connection.setRequestProperty("charset", "utf-8");
-
-            connection.connect();
-            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream(), "UTF-8"); // utf-8编码
-            final JSONObject jsonObject = new JSONObject(params);
-            out.append(jsonObject.toString());
-            System.out.println(jsonObject.toString());
-            out.flush();
-            out.close();
-            int code = connection.getResponseCode();
-            System.out.println("response code is " + code);
-            InputStream is;
-            if (code == 200) {
-                is = connection.getInputStream();
-            } else {
-                is = connection.getErrorStream();
-            }
-
-            // 读取响应
-            int length = (int) connection.getContentLength();// 获取长度
-            if (length != -1) {
-                byte[] data = new byte[length];
-                byte[] temp = new byte[512];
-                int readLen = 0;
-                int destPos = 0;
-                while ((readLen = is.read(temp)) > 0) {
-                    System.arraycopy(temp, 0, data, destPos, readLen);
-                    destPos += readLen;
-                }
-                String result = new String(data, "UTF-8"); // utf-8编码
-                return result;
-            }
-
-        } catch (IOException e) {
-            Log.e("Exception occur when send http post request!", e.getMessage());
+        OkHttpClient okHttpClient = new OkHttpClient();
+        FormBody.Builder builder = new FormBody.Builder();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            builder.add(entry.getKey(), entry.getValue());
         }
-        return "error"; // 自定义错误信息
+        RequestBody requestBody = builder.build();
+        Request request = new Request.Builder()
+                .url(strURL)
+                .addHeader("User-Agent", "OkHttp Bot")
+                .post(requestBody)
+                .build();
+        try (Response response = okHttpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            }
+            //System.out.println(response.body().string());
+            return response.body().string();
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            return "error";
+        }
     }
-
-
 }

@@ -9,6 +9,8 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
@@ -42,7 +44,21 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println(RemoteApi.getFaceLandmarks(bitmap));
+                String respones = RemoteApi.getFaceLandmarks(bitmap);
+                System.out.println(respones);
+                System.out.println(respones.length());
+                for (int i = 0; i < respones.length(); i++) {
+                    System.out.print(respones.charAt(i));
+                }
+                System.out.println();
+                System.out.println(respones.substring(respones.length() - 10));
+
+                try {
+                    JSONObject jsonObject = new JSONObject(new JSONTokener(respones));
+                    System.out.println(jsonObject.get("face"));
+                } catch (org.json.JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
     }
