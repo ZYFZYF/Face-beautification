@@ -1,7 +1,5 @@
 package com.example.face_beautification;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -9,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.megvii.licensemanager.sdk.LicenseManager;
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -18,11 +16,12 @@ import org.opencv.imgproc.Imgproc;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ImageView imageView;
-
-    static{
+    static {
         System.loadLibrary("opencv_java");
     }
+
+    private ImageView imageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,12 +39,18 @@ public class MainActivity extends AppCompatActivity {
                 imageView.setImageBitmap(bitmap);
             }
         });
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(RemoteApi.getFaceLandmarks(bitmap));
+            }
+        }).start();
     }
 
     private void blurImage(Bitmap origin) {
         Mat mat = new Mat();
         Utils.bitmapToMat(origin, mat);
-        Imgproc.GaussianBlur(mat, mat, new Size(15,15),0);
+        Imgproc.GaussianBlur(mat, mat, new Size(15, 15), 0);
         Utils.matToBitmap(mat, origin);
     }
 }

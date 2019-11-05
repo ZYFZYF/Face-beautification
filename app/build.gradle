@@ -5,7 +5,7 @@ android {
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "com.example.face_beautification"
-        minSdkVersion 19
+        minSdkVersion 26
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -34,4 +34,5 @@ dependencies {
     implementation project(path: ':openCVLibrary24136')
     compile(name: 'MGLicenseManagerSDK-0.3.1', ext: 'aar')
     compile(name: 'MGFaceppSDK-0.5.2', ext: 'aar')
+    implementation 'com.squareup.okhttp3:okhttp:4.2.2'
 }
