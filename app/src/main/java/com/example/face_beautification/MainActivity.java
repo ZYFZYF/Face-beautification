@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private ImageView imageView;
+    private FaceLandmark faceLandmark;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonObject = new JSONObject(new JSONTokener(respones));
                     System.out.println(jsonObject.get("face"));
+                    faceLandmark = new FaceLandmark(jsonObject);
                 } catch (org.json.JSONException e) {
                     e.printStackTrace();
                 }

@@ -24,7 +24,6 @@ public class RemoteApi {
     private static final String API_SECRET = "auzWW7ZbB4dEE10wOjSq1cZ83jFH8j2g";
     private static final String TEST_IMAGE_FILE = "/Users/zhaoyunfeng/Desktop/大四上/图像处理/作业/Face-beautification/app/src/main/res/drawable/test.jpg";
 
-    //避免用Android函数，方便调试
     public static String getFaceLandmarks(final String base64Img) {
         HashMap<String, String> paramMap = new HashMap<String, String>() {{
             put("api_key", API_KEY);
