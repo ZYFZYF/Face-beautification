@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PictureManager {
@@ -18,6 +19,7 @@ public class PictureManager {
         targetBitmap = null;
         //这里要按照顺序添加所有实现了的变换，因为会按照顺序执行一个个变换
         //因为关键点只在最开始获取了一次，所以最后再做会改变关键点的操作，例如瘦脸
+        translaters = new ArrayList<>();
         translaters.add(new WhiteningTranslater());
         new Thread(new Runnable() {
             @Override
@@ -38,11 +40,13 @@ public class PictureManager {
         }).start();
     }
 
-    public void generateTargetBitmap() {
+    public Bitmap generateTargetBitmap() {
         targetBitmap = originBitmap;
         for (Translater translater : translaters) {
             targetBitmap = translater.render(this, targetBitmap);
+            System.out.println(translater.getEffectName() + translater.getLevel());
         }
+        return targetBitmap;
     }
 
     public void changeLevel(String effect, int targetLevel) {
@@ -52,6 +56,5 @@ public class PictureManager {
             }
         }
     }
-
 
 }
