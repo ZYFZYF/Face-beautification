@@ -4,7 +4,12 @@ import android.graphics.Bitmap;
 
 public class WhiteningTranslater extends Translater {
     @Override
-    Bitmap render(PictureManager pictureManager, Bitmap bitmap, int level) {
+    Bitmap render(PictureManager pictureManager, Bitmap bitmap) {
         return null;
+    }
+
+    @Override
+    String getEffectName() {
+        return "Whitening";
     }
 }

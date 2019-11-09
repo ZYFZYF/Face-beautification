@@ -3,5 +3,17 @@ package com.example.face_beautification;
 import android.graphics.Bitmap;
 
 public abstract class Translater {
-    abstract Bitmap render(PictureManager pictureManager, Bitmap bitmap, int level);
+    protected int level;
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    abstract Bitmap render(PictureManager pictureManager, Bitmap bitmap);
+
+    abstract String getEffectName();
 }
