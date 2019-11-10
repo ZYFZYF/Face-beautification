@@ -19,8 +19,16 @@ public class PictureManager {
         targetBitmap = null;
         //这里要按照顺序添加所有实现了的变换，因为会按照顺序执行一个个变换
         //因为关键点只在最开始获取了一次，所以最后再做会改变关键点的操作，例如瘦脸
-        translaters = new ArrayList<>();
-        translaters.add(new WhiteningTranslater());
+        try {
+
+            translaters = new ArrayList<>();
+            for (String effect : Common.EFFECT_SET) {
+                translaters.add((Translater) Class.forName("com.example.face_beautification." + effect + "Translater").newInstance());
+                System.out.println(translaters.get(0).getName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -44,14 +52,14 @@ public class PictureManager {
         targetBitmap = originBitmap;
         for (Translater translater : translaters) {
             targetBitmap = translater.render(this, targetBitmap);
-            System.out.println(translater.getEffectName() + translater.getLevel());
+            System.out.println(translater.getName() + translater.getLevel());
         }
         return targetBitmap;
     }
 
     public void changeLevel(String effect, int targetLevel) {
         for (Translater translater : translaters) {
-            if (translater.getEffectName().equals(effect)) {
+            if (translater.getName().equals(effect)) {
                 translater.setLevel(targetLevel);
             }
         }
