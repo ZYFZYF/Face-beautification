@@ -11,9 +11,4 @@ public class SmootherTranslater extends Translater {
     Bitmap render(PictureManager pictureManager, Bitmap bitmap) {
         return null;
     }
-
-    @Override
-    String getEffectName() {
-        return null;
-    }
 }

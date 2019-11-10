@@ -14,8 +14,4 @@ public class WhiteningTranslater extends Translater {
         return bitmap;
     }
 
-    @Override
-    String getEffectName() {
-        return "Whitening";
-    }
 }
