@@ -22,6 +22,7 @@ public class MainActivity extends FragmentActivity {
     PictureManager pictureManager;
     private ImageView imageView;
     private String nowEffect;
+    private long prevChangeTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +51,20 @@ public class MainActivity extends FragmentActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //如果是因为切换效果造成的progress修改则不进行图片的重新生成
                 effectLevel.put(nowEffect, progress);
+                final int myProgress = progress;
+                System.out.println("This is " + nowEffect + " and his level is " + progress + " last changetime is " + prevChangeTime + " now time is " + System.currentTimeMillis());
                 if (fromUser) {
-                    pictureManager.changeLevel(nowEffect, progress);
-                    generatePicture();
+                    if (System.currentTimeMillis() - prevChangeTime > 1000) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pictureManager.changeLevel(nowEffect, myProgress);
+                                generatePicture();
+                            }
+                        }).start();
+                    }
+                    prevChangeTime = System.currentTimeMillis();
                 }
-                System.out.println("This is " + nowEffect + " and his level is " + progress);
             }
 
             @Override

@@ -49,9 +49,9 @@ public class PictureManager {
     }
 
     public Bitmap generateTargetBitmap() {
-        targetBitmap = originBitmap;
+        targetBitmap = originBitmap.copy(Bitmap.Config.ARGB_8888, true);
         for (Translater translater : translaters) {
-            targetBitmap = translater.render(this, targetBitmap);
+            translater.render(this, targetBitmap);
             System.out.println(translater.getName() + translater.getLevel());
         }
         return targetBitmap;

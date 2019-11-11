@@ -8,7 +8,6 @@ public class SmootherTranslater extends Translater {
     }
 
     @Override
-    Bitmap render(PictureManager pictureManager, Bitmap bitmap) {
-        return bitmap;
+    void render(PictureManager pictureManager, Bitmap bitmap) {
     }
 }
