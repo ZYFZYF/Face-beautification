@@ -3,17 +3,15 @@ package com.example.face_beautification;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.TabHost;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 
 import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends FragmentActivity {
 
 
     static {
@@ -69,20 +67,19 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        //添加下方的选择按钮
-        LinearLayout linearLayout = findViewById(R.id.linearLayout);
-        for (final String effect : Common.EFFECT_SET) {
-            Button button = new Button(this);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    nowEffect = effect;
-                    seekBar.setProgress(effectLevel.get(nowEffect));
-                }
-            });
-            button.setText(effect);
-            linearLayout.addView(button);
+
+        TabHost tabHost = findViewById(android.R.id.tabhost);
+        tabHost.setup();
+        for (String effect : Common.EFFECT_SET) {
+            tabHost.addTab(tabHost.newTabSpec(effect).setIndicator(Common.EFFECT_SHOW_NAME.get(effect)).setContent(R.id.linearLayout));
         }
+        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String tabId) {
+                nowEffect = tabId;
+                seekBar.setProgress(effectLevel.get(tabId));
+            }
+        });
     }
 
     private void generatePicture() {

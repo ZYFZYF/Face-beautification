@@ -9,6 +9,6 @@ public class SmootherTranslater extends Translater {
 
     @Override
     Bitmap render(PictureManager pictureManager, Bitmap bitmap) {
-        return null;
+        return bitmap;
     }
 }
