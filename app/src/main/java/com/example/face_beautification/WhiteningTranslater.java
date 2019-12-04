@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 
 public class WhiteningTranslater extends Translater {
 
@@ -15,15 +17,11 @@ public class WhiteningTranslater extends Translater {
     void render(PictureManager pictureManager, Bitmap bitmap) {
         Mat mat = new Mat();
         Utils.bitmapToMat(bitmap, mat);
-        for (int row = 0; row < mat.rows(); row++) {
-            for (int col = 0; col < mat.cols(); col++) {
-                double[] rgb = mat.get(row, col);
-                rgb[0] += level;
-                rgb[1] += level;
-                rgb[2] += level;
-                mat.put(row, col, rgb);
-            }
+        //如果用到了这个效果再做
+        if (level > 0) {
+            Imgproc.blur(mat, mat, new Size(level, level));
         }
+
         Utils.matToBitmap(mat, bitmap);
     }
 

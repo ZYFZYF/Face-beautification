@@ -3,6 +3,7 @@ package com.example.face_beautification;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TabHost;
@@ -22,7 +23,10 @@ public class MainActivity extends FragmentActivity {
     PictureManager pictureManager;
     private ImageView imageView;
     private String nowEffect;
-    private long prevChangeTime;
+    private Runnable render;
+    private Handler handler;
+    private SeekBar seekBar;
+    private TabHost tabHost;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,32 +42,34 @@ public class MainActivity extends FragmentActivity {
 
         nowEffect = "Whitening";
         effectLevel = new HashMap<>();
+
+        //设置handler用来接收渲染消息
+        render = new Runnable() {
+            @Override
+            public void run() {
+                imageView.setImageBitmap(pictureManager.generateTargetBitmap());
+            }
+        };
+
+        handler = new Handler();
         //初始化各个美颜效果对应的level
         for (String effect : Common.EFFECT_SET) {
             effectLevel.put(effect, 0);
         }
         //设置美颜程度拉动条
-        final SeekBar seekBar = findViewById(R.id.levelSelector);
+        seekBar = findViewById(R.id.levelSelector);
         seekBar.setMax(100);
-        seekBar.setProgress(0);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //如果是因为切换效果造成的progress修改则不进行图片的重新生成
+                System.out.printf("changed and progress is %d and fromUser is %b", progress, fromUser);
                 effectLevel.put(nowEffect, progress);
                 final int myProgress = progress;
-                System.out.println("This is " + nowEffect + " and his level is " + progress + " last changetime is " + prevChangeTime + " now time is " + System.currentTimeMillis());
                 if (fromUser) {
-                    if (System.currentTimeMillis() - prevChangeTime > 1000) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pictureManager.changeLevel(nowEffect, myProgress);
-                                generatePicture();
-                            }
-                        }).start();
-                    }
-                    prevChangeTime = System.currentTimeMillis();
+                    pictureManager.changeLevel(nowEffect, myProgress);
+                    handler.removeCallbacks(render);
+                    handler.postDelayed(render, 100);
                 }
             }
 
@@ -77,8 +83,10 @@ public class MainActivity extends FragmentActivity {
 
             }
         });
+        seekBar.setProgress(0);
 
-        TabHost tabHost = findViewById(android.R.id.tabhost);
+
+        tabHost = findViewById(android.R.id.tabhost);
         tabHost.setup();
         for (String effect : Common.EFFECT_SET) {
             tabHost.addTab(tabHost.newTabSpec(effect).setIndicator(Common.EFFECT_SHOW_NAME.get(effect)).setContent(R.id.linearLayout));
@@ -86,13 +94,15 @@ public class MainActivity extends FragmentActivity {
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
+                System.out.printf("some thing changed %s\n", tabId);
                 nowEffect = tabId;
                 seekBar.setProgress(effectLevel.get(tabId));
             }
         });
+        //不加这两行是无法在开启app的时候显示上面的图片和进度条的wtf...
+        tabHost.setCurrentTab(1);
+        tabHost.setCurrentTab(0);
+
     }
 
-    private void generatePicture() {
-        imageView.setImageBitmap(pictureManager.generateTargetBitmap());
-    }
 }
