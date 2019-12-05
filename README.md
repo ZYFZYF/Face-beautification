@@ -1,1 +1,8 @@
-Face-beautification
+# Face-beautification
+    数字媒体(2)：多媒体》课程中音频小课堂大作业-人脸美化人物
+    
+## TODO
+    在Face++ API没有完成请求之前不允许操作，或者说显示加载中（或者正在处理图片）
+    
+## 难点
+    使用了Java的Opencv接口，而网上的教程基本都是Python和C++版的，API的名称和调用方法也不太一样，这方面花费了不少时间
