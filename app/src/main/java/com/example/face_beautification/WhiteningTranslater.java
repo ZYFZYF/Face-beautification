@@ -4,8 +4,13 @@ import android.graphics.Bitmap;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class WhiteningTranslater extends Translater {
 
@@ -21,7 +26,10 @@ public class WhiteningTranslater extends Translater {
         if (level > 0) {
             Imgproc.blur(mat, mat, new Size(level, level));
         }
-
+        //显示脸部轮廓
+        List<MatOfPoint> contours = new ArrayList<>();
+        contours.add(new MatOfPoint(pictureManager.faceLandmark.getFaceContour()));
+        Imgproc.drawContours(mat, contours, 0, new Scalar(255, 255, 255));
         Utils.matToBitmap(mat, bitmap);
     }
 

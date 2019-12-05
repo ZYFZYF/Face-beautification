@@ -102,7 +102,6 @@ public class MainActivity extends FragmentActivity {
         //不加这两行是无法在开启app的时候显示上面的图片和进度条的wtf...
         tabHost.setCurrentTab(1);
         tabHost.setCurrentTab(0);
-
     }
 
 }

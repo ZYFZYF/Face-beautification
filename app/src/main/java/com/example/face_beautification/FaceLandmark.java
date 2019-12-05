@@ -25,6 +25,7 @@ public class FaceLandmark {
     private List<Point> rightEyebrow, rightEye, rightEyeEyelid;
     private List<Point> nose, noseLeft, noseRight, noseMidline;
     private List<Point> upperLip, lowerLip;
+    private Point[] faceContourArray;
 
     FaceLandmark(JSONObject object) {
         try {
@@ -49,6 +50,7 @@ public class FaceLandmark {
             faceContour.addAll(faceContourLeft);
             Collections.reverse(faceContourLeft);
             faceContour.addAll(faceContourRight);
+            faceContour.addAll(faceHairline);
             //拿左眼的相关轮廓
             leftEye = generateOrderedPrefixData(landmark.getJSONObject("left_eye"), "left_eye");
             leftEyebrow = generateOrderedPrefixData(landmark.getJSONObject("left_eyebrow"), "left_eyebrow");
@@ -117,8 +119,15 @@ public class FaceLandmark {
         return faceSize;
     }
 
-    public List<Point> getFaceContour() {
-        return faceContour;
+    public Point[] getFaceContour() {
+        if (faceContourArray == null) {
+            faceContourArray = new Point[faceContour.size()];
+            faceContour.toArray(faceContourArray);
+            for (Point p : faceContourArray) {
+                System.out.printf("%f %f\n", p.x, p.y);
+            }
+        }
+        return faceContourArray;
     }
 
     public List<Point> getFaceHairline() {
