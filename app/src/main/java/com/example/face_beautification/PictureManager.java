@@ -33,17 +33,17 @@ public class PictureManager {
             @Override
             public void run() {
                 //如果出现异常，说明没get到正确的信息，再跑一遍就好了
-                while (true) {
+                for (int i = 0; i < 3; i++) {
                     String respones = RemoteApi.getFaceLandmarks(bitmap);
                     try {
                         JSONObject jsonObject = new JSONObject(new JSONTokener(respones));
+                        System.out.println(jsonObject);
                         faceLandmark = new FaceLandmark(jsonObject);
                         break;
                     } catch (org.json.JSONException e) {
                         e.printStackTrace();
                     }
                 }
-
             }
         }).start();
     }
@@ -51,8 +51,9 @@ public class PictureManager {
     public Bitmap generateTargetBitmap() {
         targetBitmap = originBitmap.copy(Bitmap.Config.ARGB_8888, true);
         for (Translater translater : translaters) {
+            long begin = System.currentTimeMillis();
             translater.render(this, targetBitmap);
-            System.out.println(translater.getName() + translater.getLevel());
+            System.out.printf("%s %d render cost %d ms\n", translater.getName(), translater.getLevel(), System.currentTimeMillis() - begin);
         }
         return targetBitmap;
     }

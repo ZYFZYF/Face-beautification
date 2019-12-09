@@ -5,7 +5,10 @@
     - Android
         - 在Face++ API没有完成请求之前不允许操作，或者说显示加载中（或者正在处理图片）
     - 美白 ×
-    - 磨皮 ×
+    - 磨皮 部分完成
+        - [图像算法---磨皮算法研究汇总](https://blog.csdn.net/trent1985/article/details/50496969)
+        - [opencv 美白磨皮人脸检测](https://blog.csdn.net/zhangqipu000/article/details/53260647)
+        - 实现了基于双边滤波的磨皮，但是速度过慢，而且效果没有那么好（100的要15秒）
     - 大眼 ×
     - 瘦脸 ×
     
