@@ -15,6 +15,9 @@
     - 瘦脸 ×
     - 口红 ×
     
+## TIPS
+    - 不要局限于opencv的处理方式，可以考虑android的convas，可以直接在bitmap上绘制
+    
     
 ## 难点
     使用了Java的Opencv接口，而网上的教程基本都是Python和C++版的，API的名称和调用方法也不太一样，这方面花费了不少时间
