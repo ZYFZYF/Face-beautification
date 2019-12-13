@@ -13,7 +13,9 @@
         - 速度很快，基本满足要求
     - 大眼 ×
     - 瘦脸 ×
-    - 口红 ×
+    - 口红 完成
+        - [Android Canvas之Path操作](https://www.jianshu.com/p/9ad3aaae0c63)
+        - 用canvas填充face++拿到的口红边界，然后做个模糊和混合
     
 ## TIPS
     - 不要局限于opencv的处理方式，可以考虑android的convas，可以直接在bitmap上绘制
