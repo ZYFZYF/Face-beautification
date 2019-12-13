@@ -42,7 +42,7 @@ public class SmootherTranslater extends Translater {
         if (level > 0) {
             amniXSkinSmooth.storeBitmap(bitmap, false);
             amniXSkinSmooth.initSdk();
-            float smoothLevel = level * 8;
+            float smoothLevel = level * 4;
             //amniXSkinSmooth.startFullBeauty(level, level);
             amniXSkinSmooth.startSkinSmoothness(smoothLevel);
             //amniXSkinSmooth.startSkinWhiteness(level);
