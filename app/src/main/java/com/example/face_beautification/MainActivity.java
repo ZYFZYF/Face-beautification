@@ -37,7 +37,7 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         imageView = findViewById(R.id.imageView);
-        final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test_1);
+        final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test_11);
         imageView.setImageBitmap(bitmap);
 
         pictureManager = new PictureManager(bitmap);

@@ -52,7 +52,7 @@ public class PictureManager {
         targetBitmap = originBitmap.copy(Bitmap.Config.ARGB_8888, true);
         for (Translater translater : translaters) {
             long begin = System.currentTimeMillis();
-            translater.render(this, targetBitmap);
+            targetBitmap = translater.render(this, targetBitmap);
             System.out.printf("%s %d render cost %d ms\n", translater.getName(), translater.getLevel(), System.currentTimeMillis() - begin);
         }
         return targetBitmap;
