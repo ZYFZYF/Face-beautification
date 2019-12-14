@@ -11,7 +11,9 @@
         - 实现了基于双边滤波的磨皮，但是速度过慢，而且效果没有那么好（100的要15秒）
         - [HighPassSkinSmoothing-Android](https://github.com/msoftware/HighPassSkinSmoothing-Android)
         - 速度很快，基本满足要求
-    - 大眼 ×
+    - 大眼 完成(?)
+        - [图像处理算法之瘦脸及放大眼睛](https://blog.csdn.net/grafx/article/details/70232797?locationNum=11&fps=1)
+        - [Android：代码撸彩妆 2（大眼，瘦脸，大长腿)](https://juejin.im/post/5d5ff49bf265da03d42fae9c)
     - 瘦脸 ×
     - 口红 完成
         - [Android Canvas之Path操作](https://www.jianshu.com/p/9ad3aaae0c63)
