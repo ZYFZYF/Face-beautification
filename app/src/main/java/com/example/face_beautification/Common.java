@@ -36,21 +36,25 @@ public class Common {
     }
 
     //根据原论文，level应当是[-1,1]的数字，负数的时候是缩小，正数是放大
-    static public Bitmap localScale(Bitmap bitmap, int center_x, int center_y, int radius, float level) {
-        int left = checkBorderX(bitmap, center_x - radius);
-        int right = checkBorderX(bitmap, center_x + radius);
-        int upper = checkBorderY(bitmap, center_y - radius);
-        int lower = checkBorderY(bitmap, center_y + radius);
+    static public Bitmap localScale(Bitmap bitmap, int center_x, int center_y, int scale_width, int scale_height, float level) {
+        int left = checkBorderX(bitmap, center_x - scale_width);
+        int right = checkBorderX(bitmap, center_x + scale_width);
+        int upper = checkBorderY(bitmap, center_y - scale_height);
+        int lower = checkBorderY(bitmap, center_y + scale_height);
+        //要把两个轴进行一定的缩放然后变成圆
+        int scale = Math.max(scale_width, scale_height);
+        double width_zoom_rate = scale / scale_width;
+        double height_zoom_rate = scale / scale_height;
         Bitmap ret = bitmap.copy(bitmap.getConfig(), true);
         for (int i = left; i <= right; i++) {
             for (int j = upper; j <= lower; j++) {
-                double r = Math.sqrt((j - center_y) * (j - center_y) + (i - center_x) * (i - center_x));
-                if (r < radius) {
-                    double sin = (j - center_y) / r;
-                    double cos = (i - center_x) / r;
-                    double new_r = (1 - (r / radius - 1) * (r / radius - 1) * level) * r;
-                    int new_y = (int) (new_r * sin + center_y);
-                    int new_x = (int) (new_r * cos + center_x);
+                double r = Math.sqrt((i - center_x) * (i - center_x) * width_zoom_rate * width_zoom_rate + (j - center_y) * (j - center_y) * height_zoom_rate * height_zoom_rate);
+                if (r < scale) {
+                    double cos = (i - center_x) * width_zoom_rate / r;
+                    double sin = (j - center_y) * height_zoom_rate / r;
+                    double new_r = (1 - (r / scale - 1) * (r / scale - 1) * level) * r;
+                    int new_x = (int) (new_r * cos / width_zoom_rate + center_x);
+                    int new_y = (int) (new_r * sin / height_zoom_rate + center_y);
                     ret.setPixel(i, j, bitmap.getPixel(new_x, new_y));
                 }
             }
