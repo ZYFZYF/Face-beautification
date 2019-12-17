@@ -15,7 +15,7 @@ import java.util.List;
 public class WhiteningTranslater extends Translater {
 
     public WhiteningTranslater() {
-        super("Whitening", "美白", false, 0);
+        super("Whitening", "美白", true, 0);
     }
 
     @Override
@@ -35,7 +35,22 @@ public class WhiteningTranslater extends Translater {
             System.out.println(CvType.typeToString(mat.type()));
             Mat test = new Mat(mat.size(), CvType.CV_32FC3, new Scalar(0.01 * level / 100, 0.01 * level, 0.01 * level));
             mat.convertTo(mat, CvType.CV_32FC3, 1.0 / 255);
-            Imgproc.accumulate(test, mat);
+            //Imgproc.accumulate(test, mat);
+
+            double[] pixel=new double[3];
+            for (int i = 0, rlen = mat.rows(); i < rlen; i++) {
+                for (int j = 0, clen = mat.cols(); j < clen; j++) {
+                        pixel = mat.get(i, j).clone();
+                        double brightness=0.299*pixel[0]+0.587*pixel[1]+0.114*pixel[2];
+                        double brightnessIncre=(Math.log(brightness*(0.2*level-1)+1)/Math.log(0.2*level))-brightness;//level限制在0-20
+                        pixel[0] = pixel[0]+brightnessIncre/(0.299+0.587+0.114);//R
+                        pixel[1] = pixel[1]+brightnessIncre/(0.299+0.587+0.114);//G
+                        pixel[2] = pixel[2]+brightnessIncre/(0.299+0.587+0.114);//B
+                        mat.put(i, j, pixel);
+
+                }
+            }
+
             mat.convertTo(mat, CvType.CV_8UC3, 255);
 
         }
