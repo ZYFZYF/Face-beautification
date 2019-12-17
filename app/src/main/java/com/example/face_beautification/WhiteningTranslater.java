@@ -19,7 +19,7 @@ public class WhiteningTranslater extends Translater {
     }
 
     @Override
-    void render(PictureManager pictureManager, Bitmap bitmap) {
+    Bitmap render(PictureManager pictureManager, Bitmap bitmap) {
         Mat mat = new Mat();
         Utils.bitmapToMat(bitmap, mat);
         //去掉透明通道
@@ -56,6 +56,7 @@ public class WhiteningTranslater extends Translater {
         }
         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2RGBA);
         Utils.matToBitmap(mat, bitmap);
+        return bitmap;
     }
 
 }

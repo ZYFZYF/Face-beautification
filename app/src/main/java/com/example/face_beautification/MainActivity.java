@@ -3,7 +3,6 @@ package com.example.face_beautification;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TabHost;
@@ -11,6 +10,8 @@ import android.widget.TabHost;
 import androidx.fragment.app.FragmentActivity;
 
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends FragmentActivity {
 
@@ -23,10 +24,12 @@ public class MainActivity extends FragmentActivity {
     PictureManager pictureManager;
     private ImageView imageView;
     private String nowEffect;
-    private Runnable render;
-    private Handler handler;
     private SeekBar seekBar;
     private TabHost tabHost;
+    private boolean needRender;
+    private long prevChangedTime;
+    private Timer timer;
+    private TimerTask timerTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +37,7 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         imageView = findViewById(R.id.imageView);
-        final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test);
+        final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test_11);
         imageView.setImageBitmap(bitmap);
 
         pictureManager = new PictureManager(bitmap);
@@ -43,15 +46,18 @@ public class MainActivity extends FragmentActivity {
         nowEffect = "Whitening";
         effectLevel = new HashMap<>();
 
-        //设置handler用来接收渲染消息
-        render = new Runnable() {
+        timerTask = new TimerTask() {
             @Override
             public void run() {
-                imageView.setImageBitmap(pictureManager.generateTargetBitmap());
+                if (needRender && System.currentTimeMillis() - prevChangedTime > 100) {
+                    imageView.setImageBitmap(pictureManager.generateTargetBitmap());
+                    needRender = false;
+                }
             }
         };
+        timer = new Timer();
+        timer.schedule(timerTask, 1000, 100);
 
-        handler = new Handler();
         //初始化各个美颜效果对应的level
         for (String effect : Common.EFFECT_SET) {
             effectLevel.put(effect, 0);
@@ -63,13 +69,13 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //如果是因为切换效果造成的progress修改则不进行图片的重新生成
-                System.out.printf("changed and progress is %d and fromUser is %b", progress, fromUser);
+                System.out.printf("changed and progress is %d and fromUser is %b\n", progress, fromUser);
                 effectLevel.put(nowEffect, progress);
                 final int myProgress = progress;
                 if (fromUser) {
                     pictureManager.changeLevel(nowEffect, myProgress);
-                    handler.removeCallbacks(render);
-                    handler.postDelayed(render, 100);
+                    needRender = true;
+                    prevChangedTime = System.currentTimeMillis();
                 }
             }
 

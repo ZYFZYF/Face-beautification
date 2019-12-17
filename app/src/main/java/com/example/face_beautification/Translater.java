@@ -36,5 +36,5 @@ public abstract class Translater {
 
     ;
 
-    abstract void render(PictureManager pictureManager, Bitmap bitmap);
+    abstract Bitmap render(PictureManager pictureManager, Bitmap bitmap);
 }
