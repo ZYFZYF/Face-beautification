@@ -2,7 +2,7 @@
    《数字媒体(2)：多媒体》课程中音频小课堂大作业-人脸美化任务
     
 ## TODO
-   - Android 部分完成
+   - Android 完成
        - 在Face++ API没有完成请求之前不允许UI操作，或者说显示加载中（或者正在处理图片）完成
            - 用的是和弹出窗一样的PopupWindow组件
            - [Android-SpinKit](https://github.com/ybq/Android-SpinKit)
