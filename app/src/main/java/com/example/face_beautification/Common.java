@@ -55,8 +55,8 @@ public class Common {
                     double cos = (i - center_x) * width_zoom_rate / r;
                     double sin = (j - center_y) * height_zoom_rate / r;
                     double new_r = (1 - (r / scale - 1) * (r / scale - 1) * level) * r;
-                    int new_x = (int) (new_r * cos / width_zoom_rate + center_x);
-                    int new_y = (int) (new_r * sin / height_zoom_rate + center_y);
+                    int new_x = checkBorderX(bitmap, (int) (new_r * cos / width_zoom_rate + center_x));
+                    int new_y = checkBorderY(bitmap, (int) (new_r * sin / height_zoom_rate + center_y));
                     ret.setPixel(i, j, bitmap.getPixel(new_x, new_y));
                 }
             }
@@ -65,11 +65,11 @@ public class Common {
     }
 
     //局部扭曲变换
-    static public Bitmap localTranslate(Bitmap bitmap, int c_x, int c_y, int m_x, int m_y) {
+    static public Bitmap localTranslate(Bitmap bitmap, int c_x, int c_y, int m_x, int m_y, int r_max) {
         //这里为了简化，认为r_max就是c到m的距离
-        int r_max = (int) Math.sqrt((m_x - c_x) * (m_x - c_x) + (m_y - c_y) * (m_y - c_y));
+        //int r_max = (int) Math.sqrt((m_x - c_x) * (m_x - c_x) + (m_y - c_y) * (m_y - c_y));
         //进行一定程度的缩放
-        r_max = r_max * 7 / 10;
+        //r_max = r_max * 7 / 10;
         int left = checkBorderX(bitmap, c_x - r_max);
         int right = checkBorderX(bitmap, c_x + r_max);
         int upper = checkBorderY(bitmap, c_y - r_max);

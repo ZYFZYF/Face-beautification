@@ -226,4 +226,12 @@ public class FaceLandmark {
     private Point convertObjectToPoint(JSONObject object) throws JSONException {
         return new Point(object.getInt("x"), object.getInt("y"));
     }
+
+    public Point getNoseCenter() {
+//        int cnt = 0;
+//        for (Point pos : noseMidline) {
+//            System.out.printf("%d (%f,%f)\n", cnt++, pos.x, pos.y);
+//        }
+        return noseMidline.get(40);
+    }
 }
