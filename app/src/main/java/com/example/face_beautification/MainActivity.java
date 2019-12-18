@@ -1,7 +1,6 @@
 package com.example.face_beautification;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,11 +12,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -32,6 +33,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.File;
 import java.util.HashMap;
@@ -51,6 +56,7 @@ public class MainActivity extends FragmentActivity {
     private static int REQUEST_PERMISSION_CODE = 1;
     final int TAKE_PHOTO_REQUEST = 0;
     final int PICK_PHOTO_IN_ALBUM = 1;
+    final int TRY_LIMIT = 3;
     HashMap<String, Integer> effectLevel;
     PictureManager pictureManager;
     private ImageView imageView;
@@ -61,21 +67,35 @@ public class MainActivity extends FragmentActivity {
     private long prevChangedTime;
     private Timer timer;
     private TimerTask timerTask;
-    private PopupWindow popupWindow;
+    private PopupWindow operateWindow;
+    private PopupWindow loadingWindow;
     private String photoPath;
+    private Bitmap readyBitmap;
+    private PictureManager readyPictureManager;
+    private FaceLandmark faceLandmark;
+    private Handler handler;
+    private LinearLayout linearLayout;
+    private Boolean isGettingFaceLandmarks = false;
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (!isGettingFaceLandmarks) {
+            return super.dispatchTouchEvent(ev);
+        }
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        handler = new Handler();
         initPopupWindow();
         final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test_12);
         initImageView(bitmap);
-        initTranslater(bitmap);
+        initLevel();
         initSeekBar();
         initTabHost();
-        LinearLayout page1 = (LinearLayout) findViewById(R.id.page1);
-        page1.setAlpha(0.5f);
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
@@ -85,7 +105,10 @@ public class MainActivity extends FragmentActivity {
             }
         }
 
-
+        linearLayout = findViewById(R.id.linearLayout);
+        //setDisplayImage(bitmap);
+        imageView.setImageBitmap(bitmap);
+        //pictureManager = new PictureManager(bitmap);
     }
 
     private void initImageView(Bitmap bitmap) {
@@ -95,18 +118,19 @@ public class MainActivity extends FragmentActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                popupWindow.showAtLocation(findViewById(R.id.linearLayout), Gravity.BOTTOM, 0, 0);
+                operateWindow.showAtLocation(findViewById(R.id.linearLayout), Gravity.BOTTOM, 0, 0);
             }
         });
     }
 
-    private void initTranslater(Bitmap bitmap) {
-        //新建图片管理器
-        pictureManager = new PictureManager(bitmap);
-
+    private void initLevel() {
 
         nowEffect = "Whitening";
         effectLevel = new HashMap<>();
+        //初始化各个美颜效果对应的level
+        for (String effect : Common.EFFECT_SET) {
+            effectLevel.put(effect, 0);
+        }
 
         timerTask = new TimerTask() {
             @Override
@@ -120,10 +144,6 @@ public class MainActivity extends FragmentActivity {
         timer = new Timer();
         timer.schedule(timerTask, 1000, 100);
 
-        //初始化各个美颜效果对应的level
-        for (String effect : Common.EFFECT_SET) {
-            effectLevel.put(effect, 0);
-        }
     }
 
     private void initSeekBar() {
@@ -178,14 +198,14 @@ public class MainActivity extends FragmentActivity {
 
     private void initPopupWindow() {
         //设置点击图片弹出的菜单
-        popupWindow = new PopupWindow();
+        operateWindow = new PopupWindow();
         View popupView = getLayoutInflater().inflate(R.layout.pop_up, null);
-        popupWindow.setContentView(popupView);
-        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        popupWindow.setFocusable(true);
-        popupWindow.setAnimationStyle(R.style.anim_menu_bottombar);
+        operateWindow.setContentView(popupView);
+        operateWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        operateWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        operateWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        operateWindow.setFocusable(true);
+        operateWindow.setAnimationStyle(R.style.anim_menu_bottombar);
         //设置拍照的点击
         Button camera = popupView.findViewById(R.id.camera);
         camera.setOnClickListener(new View.OnClickListener() {
@@ -208,6 +228,13 @@ public class MainActivity extends FragmentActivity {
                 startActivityForResult(intent, PICK_PHOTO_IN_ALBUM);
             }
         });
+        //设置获取人脸关键点时的loading画面
+        loadingWindow = new PopupWindow();
+        View loadingView = getLayoutInflater().inflate(R.layout.loading, null);
+        loadingWindow.setContentView(loadingView);
+        loadingWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        loadingWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        loadingWindow.setAnimationStyle(R.style.anim_menu_bottombar);
     }
 
     @Override
@@ -221,7 +248,7 @@ public class MainActivity extends FragmentActivity {
             //Bitmap photo = data.getParcelableExtra("data");
             Bitmap photo = BitmapFactory.decodeFile(photoPath);
             setDisplayImage(photo);
-            popupWindow.dismiss();
+            operateWindow.dismiss();
         }
         if (requestCode == PICK_PHOTO_IN_ALBUM) {
             if (resultCode == RESULT_CANCELED) {
@@ -233,12 +260,56 @@ public class MainActivity extends FragmentActivity {
             System.out.println(path);
             Bitmap photo = BitmapFactory.decodeFile(uri2path(uri));
             setDisplayImage(photo);
-            popupWindow.dismiss();
+            operateWindow.dismiss();
         }
     }
 
     void setDisplayImage(Bitmap bitmap) {
-        imageView.setImageBitmap(bitmap);
+        readyBitmap = bitmap;
+        linearLayout.setAlpha(0.5f);
+        isGettingFaceLandmarks = true;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //如果出现异常，说明没get到正确的信息，再跑一遍就好了
+                int try_count;
+                for (try_count = 0; try_count < TRY_LIMIT; try_count++) {
+                    String response = RemoteApi.getFaceLandmarks(readyBitmap);
+                    try {
+                        JSONObject jsonObject = new JSONObject(new JSONTokener(response));
+                        System.out.println(jsonObject);
+                        faceLandmark = new FaceLandmark(jsonObject);
+                        break;
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (try_count < TRY_LIMIT) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            isGettingFaceLandmarks = false;
+                            linearLayout.setAlpha(1.0f);
+                            imageView.setImageBitmap(readyBitmap);
+                            pictureManager = new PictureManager(readyBitmap, faceLandmark);
+                            Toast.makeText(MainActivity.this, "获取人脸关键点成功๑乛◡乛๑", Toast.LENGTH_LONG).show();
+                            loadingWindow.dismiss();
+                        }
+                    });
+                } else {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            isGettingFaceLandmarks = false;
+                            linearLayout.setAlpha(1.0f);
+                            Toast.makeText(MainActivity.this, "获取人脸关键点失败(>﹏<)\n 请检查网络连接或者重启APP或者换一张图片┐(─__─)┌", Toast.LENGTH_LONG).show();
+                            loadingWindow.dismiss();
+                        }
+                    });
+                }
+            }
+        }).start();
+        loadingWindow.showAtLocation(findViewById(R.id.linearLayout), Gravity.CENTER, 0, 0);
     }
 
     private String generatePhotoPath() {
@@ -294,4 +365,5 @@ public class MainActivity extends FragmentActivity {
             }
         }
     }
+
 }

@@ -27,64 +27,58 @@ public class FaceLandmark {
     private List<Point> upperLip, lowerLip;
     private Point[] faceContourArray;
 
-    FaceLandmark(JSONObject object) {
-        try {
-            //关键点表示方法参照https://console.faceplusplus.com.cn/documents/55107022
-            JSONObject faceObject = object.getJSONObject("face");
-            //拿到人脸的长方体轮廓
-            JSONObject faceRectangle = faceObject.getJSONObject("face_rectangle");
-            faceLeftTop = new Point(faceRectangle.getInt("left"), faceRectangle.getInt("top"));
-            faceSize = new Point(faceRectangle.getInt("width"), faceRectangle.getInt("height"));
-            System.out.println(faceLeftTop.toString() + faceSize.toString());
-            //拿关键点轮廓
-            JSONObject landmark = faceObject.getJSONObject("landmark");
-            //拿脸的关键点轮廓
-            JSONObject face = landmark.getJSONObject("face");
-            faceHairline = generateOrderedPrefixData(face, "face_hairline");
-            //这两部分都是从下巴开始到耳朵
-            faceContourLeft = generateOrderedPrefixData(face, "face_contour_left");
-            faceContourRight = generateOrderedPrefixData(face, "face_contour_right");
-            //翻转为了让轮廓整体从左到右
-            faceContour = new ArrayList<>();
-            Collections.reverse(faceContourLeft);
-            faceContour.addAll(faceContourLeft);
-            Collections.reverse(faceContourLeft);
-            faceContour.addAll(faceContourRight);
-            faceContour.addAll(faceHairline);
-            //拿左眼的相关轮廓
-            leftEye = generateOrderedPrefixData(landmark.getJSONObject("left_eye"), "left_eye");
-            leftEyebrow = generateOrderedPrefixData(landmark.getJSONObject("left_eyebrow"), "left_eyebrow");
-            leftEyeEyelid = generateOrderedPrefixData(landmark.getJSONObject("left_eye_eyelid"), "left_eye_eyelid");
-            leftEyePupleCenter = convertObjectToPoint(landmark.getJSONObject("left_eye").getJSONObject("left_eye_pupil_center"));
-            leftEyePupleRadius = landmark.getJSONObject("left_eye").getInt("left_eye_pupil_radius");
-            //拿右眼的相关轮廓
-            rightEye = generateOrderedPrefixData(landmark.getJSONObject("right_eye"), "right_eye");
-            rightEyebrow = generateOrderedPrefixData(landmark.getJSONObject("right_eyebrow"), "right_eyebrow");
-            rightEyeEyelid = generateOrderedPrefixData(landmark.getJSONObject("right_eye_eyelid"), "right_eye_eyelid");
-            rightEyePupleCenter = convertObjectToPoint(landmark.getJSONObject("right_eye").getJSONObject("right_eye_pupil_center"));
-            rightEyePupleRadius = landmark.getJSONObject("right_eye").getInt("right_eye_pupil_radius");
-            //拿鼻子相关轮廓
-            JSONObject noseObject = landmark.getJSONObject("nose");
-            //这两部分都是从上方到两边
-            noseLeft = generateOrderedPrefixData(noseObject, "nose_left");
-            noseRight = generateOrderedPrefixData(noseObject, "nose_right");
-            noseMidline = generateOrderedPrefixData(noseObject, "nose_midline");
-            nose = new ArrayList<>();
-            nose.addAll(noseLeft);
-            Collections.reverse(noseRight);
-            nose.addAll(noseLeft);
-            Collections.reverse(noseRight);
-            leftNostril = convertObjectToPoint(noseObject.getJSONObject("left_nostril"));
-            rightNostril = convertObjectToPoint(noseObject.getJSONObject("right_nostril"));
-            //拿嘴唇轮廓,都是从外到内，从左到右再从右到左
-            JSONObject mouthObject = landmark.getJSONObject("mouth");
-            upperLip = generateOrderedPrefixData(mouthObject, "upper_lip");
-            lowerLip = generateOrderedPrefixData(mouthObject, "lower_lip");
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e(TAG, "can't initialize facelandmark using return object");
-        }
+    FaceLandmark(JSONObject object) throws JSONException {
+        //关键点表示方法参照https://console.faceplusplus.com.cn/documents/55107022
+        JSONObject faceObject = object.getJSONObject("face");
+        //拿到人脸的长方体轮廓
+        JSONObject faceRectangle = faceObject.getJSONObject("face_rectangle");
+        faceLeftTop = new Point(faceRectangle.getInt("left"), faceRectangle.getInt("top"));
+        faceSize = new Point(faceRectangle.getInt("width"), faceRectangle.getInt("height"));
+        System.out.println(faceLeftTop.toString() + faceSize.toString());
+        //拿关键点轮廓
+        JSONObject landmark = faceObject.getJSONObject("landmark");
+        //拿脸的关键点轮廓
+        JSONObject face = landmark.getJSONObject("face");
+        faceHairline = generateOrderedPrefixData(face, "face_hairline");
+        //这两部分都是从下巴开始到耳朵
+        faceContourLeft = generateOrderedPrefixData(face, "face_contour_left");
+        faceContourRight = generateOrderedPrefixData(face, "face_contour_right");
+        //翻转为了让轮廓整体从左到右
+        faceContour = new ArrayList<>();
+        Collections.reverse(faceContourLeft);
+        faceContour.addAll(faceContourLeft);
+        Collections.reverse(faceContourLeft);
+        faceContour.addAll(faceContourRight);
+        faceContour.addAll(faceHairline);
+        //拿左眼的相关轮廓
+        leftEye = generateOrderedPrefixData(landmark.getJSONObject("left_eye"), "left_eye");
+        leftEyebrow = generateOrderedPrefixData(landmark.getJSONObject("left_eyebrow"), "left_eyebrow");
+        leftEyeEyelid = generateOrderedPrefixData(landmark.getJSONObject("left_eye_eyelid"), "left_eye_eyelid");
+        leftEyePupleCenter = convertObjectToPoint(landmark.getJSONObject("left_eye").getJSONObject("left_eye_pupil_center"));
+        leftEyePupleRadius = landmark.getJSONObject("left_eye").getInt("left_eye_pupil_radius");
+        //拿右眼的相关轮廓
+        rightEye = generateOrderedPrefixData(landmark.getJSONObject("right_eye"), "right_eye");
+        rightEyebrow = generateOrderedPrefixData(landmark.getJSONObject("right_eyebrow"), "right_eyebrow");
+        rightEyeEyelid = generateOrderedPrefixData(landmark.getJSONObject("right_eye_eyelid"), "right_eye_eyelid");
+        rightEyePupleCenter = convertObjectToPoint(landmark.getJSONObject("right_eye").getJSONObject("right_eye_pupil_center"));
+        rightEyePupleRadius = landmark.getJSONObject("right_eye").getInt("right_eye_pupil_radius");
+        //拿鼻子相关轮廓
+        JSONObject noseObject = landmark.getJSONObject("nose");
+        //这两部分都是从上方到两边
+        noseLeft = generateOrderedPrefixData(noseObject, "nose_left");
+        noseRight = generateOrderedPrefixData(noseObject, "nose_right");
+        noseMidline = generateOrderedPrefixData(noseObject, "nose_midline");
+        nose = new ArrayList<>();
+        nose.addAll(noseLeft);
+        Collections.reverse(noseRight);
+        nose.addAll(noseLeft);
+        Collections.reverse(noseRight);
+        leftNostril = convertObjectToPoint(noseObject.getJSONObject("left_nostril"));
+        rightNostril = convertObjectToPoint(noseObject.getJSONObject("right_nostril"));
+        //拿嘴唇轮廓,都是从外到内，从左到右再从右到左
+        JSONObject mouthObject = landmark.getJSONObject("mouth");
+        upperLip = generateOrderedPrefixData(mouthObject, "upper_lip");
+        lowerLip = generateOrderedPrefixData(mouthObject, "lower_lip");
     }
 
     public float getFaceDiagonalLength() {

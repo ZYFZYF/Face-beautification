@@ -13,8 +13,8 @@ public class PictureManager {
     FaceLandmark faceLandmark;
     List<Translater> translaters;
 
-    PictureManager(final Bitmap bitmap) {
-        faceLandmark = null;
+    PictureManager(final Bitmap bitmap, FaceLandmark faceLandmark) {
+        this.faceLandmark = faceLandmark;
         originBitmap = bitmap;
         targetBitmap = null;
         //这里要按照顺序添加所有实现了的变换，因为会按照顺序执行一个个变换
@@ -29,23 +29,6 @@ public class PictureManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                //如果出现异常，说明没get到正确的信息，再跑一遍就好了
-                for (int i = 0; i < 3; i++) {
-                    String respones = RemoteApi.getFaceLandmarks(bitmap);
-                    try {
-                        JSONObject jsonObject = new JSONObject(new JSONTokener(respones));
-                        System.out.println(jsonObject);
-                        faceLandmark = new FaceLandmark(jsonObject);
-                        break;
-                    } catch (org.json.JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
     }
 
     public Bitmap generateTargetBitmap() {
