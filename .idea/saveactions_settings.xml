@@ -8,8 +8,6 @@
         <option value="activateOnBatch" />
         <option value="reformat" />
         <option value="rearrange" />
-        <option value="compile" />
-        <option value="reload" />
         <option value="missingOverrideAnnotation" />
         <option value="useBlocks" />
       </set>

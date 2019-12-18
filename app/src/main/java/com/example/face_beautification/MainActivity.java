@@ -2,8 +2,15 @@ package com.example.face_beautification;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TabHost;
 
@@ -30,16 +37,33 @@ public class MainActivity extends FragmentActivity {
     private long prevChangedTime;
     private Timer timer;
     private TimerTask timerTask;
+    private PopupWindow popupWindow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //设置点击图片弹出的菜单
+        popupWindow = new PopupWindow();
+        popupWindow.setContentView(getLayoutInflater().inflate(R.layout.pop_up, null));
+        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        popupWindow.setFocusable(true);
+        popupWindow.setAnimationStyle(R.style.anim_menu_bottombar);
 
+        //设置显示的默认图片，以及点击回调
         imageView = findViewById(R.id.imageView);
         final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test_12);
         imageView.setImageBitmap(bitmap);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.showAtLocation(findViewById(R.id.linearLayout), Gravity.BOTTOM, 0, 0);
+            }
+        });
 
+        //新建图片管理器
         pictureManager = new PictureManager(bitmap);
 
 
@@ -108,6 +132,9 @@ public class MainActivity extends FragmentActivity {
         //不加这两行是无法在开启app的时候显示上面的图片和进度条的wtf...
         tabHost.setCurrentTab(1);
         tabHost.setCurrentTab(0);
+        LinearLayout page1 = (LinearLayout) findViewById(R.id.page1);
+        page1.setAlpha(0.5f);
+
     }
 
 }
