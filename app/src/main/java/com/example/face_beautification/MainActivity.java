@@ -39,6 +39,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -75,7 +76,8 @@ public class MainActivity extends FragmentActivity {
     private FaceLandmark faceLandmark;
     private Handler handler;
     private LinearLayout linearLayout;
-    private Boolean isGettingFaceLandmarks = false;
+    private boolean isGettingFaceLandmarks = false;
+    private boolean readyToMakeUp = false;
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -106,9 +108,19 @@ public class MainActivity extends FragmentActivity {
         }
 
         linearLayout = findViewById(R.id.linearLayout);
-        //setDisplayImage(bitmap);
-        imageView.setImageBitmap(bitmap);
-        //pictureManager = new PictureManager(bitmap);
+        try {
+            InputStream is = getResources().openRawResource(R.raw.test_11);
+            byte buffer[] = new byte[is.available()];
+            is.read(buffer);
+            String defaultImageResponse = new String(buffer);
+            System.out.println(defaultImageResponse);
+            JSONObject jsonObject = new JSONObject(new JSONTokener(defaultImageResponse));
+            System.out.println(jsonObject);
+            faceLandmark = new FaceLandmark(jsonObject);
+            pictureManager = new PictureManager(bitmap, faceLandmark);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initImageView(Bitmap bitmap) {
@@ -247,7 +259,7 @@ public class MainActivity extends FragmentActivity {
             }
             //Bitmap photo = data.getParcelableExtra("data");
             Bitmap photo = BitmapFactory.decodeFile(photoPath);
-            setDisplayImage(photo);
+            replaceImage(photo);
             operateWindow.dismiss();
         }
         if (requestCode == PICK_PHOTO_IN_ALBUM) {
@@ -259,15 +271,21 @@ public class MainActivity extends FragmentActivity {
             String path = uri2path(uri);
             System.out.println(path);
             Bitmap photo = BitmapFactory.decodeFile(uri2path(uri));
-            setDisplayImage(photo);
+            replaceImage(photo);
             operateWindow.dismiss();
         }
     }
 
-    void setDisplayImage(Bitmap bitmap) {
+    void replaceImage(Bitmap bitmap) {
+        //先保存下拍照/相册里的图片
         readyBitmap = bitmap;
+        //背景虚化
         linearLayout.setAlpha(0.5f);
+        //背景不可操作
         isGettingFaceLandmarks = true;
+        //出现加载动画，这里用异步是因为有可能一开始就会调用这个函数
+        loadingWindow.showAtLocation(findViewById(R.id.linearLayout), Gravity.CENTER, 0, 0);
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -288,11 +306,22 @@ public class MainActivity extends FragmentActivity {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
+                            readyToMakeUp = true;
+                            //重置所有效果的level
+                            for (String effect : Common.EFFECT_SET) {
+                                effectLevel.put(effect, 0);
+                            }
+                            //让背景可点击
                             isGettingFaceLandmarks = false;
+                            //恢复背景原色
                             linearLayout.setAlpha(1.0f);
+                            //显示新图片
                             imageView.setImageBitmap(readyBitmap);
+                            //新建pictureManager
                             pictureManager = new PictureManager(readyBitmap, faceLandmark);
+                            //提示
                             Toast.makeText(MainActivity.this, "获取人脸关键点成功๑乛◡乛๑", Toast.LENGTH_LONG).show();
+                            //去除加载动画
                             loadingWindow.dismiss();
                         }
                     });
@@ -309,7 +338,6 @@ public class MainActivity extends FragmentActivity {
                 }
             }
         }).start();
-        loadingWindow.showAtLocation(findViewById(R.id.linearLayout), Gravity.CENTER, 0, 0);
     }
 
     private String generatePhotoPath() {
