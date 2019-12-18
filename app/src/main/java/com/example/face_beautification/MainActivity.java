@@ -211,7 +211,7 @@ public class MainActivity extends FragmentActivity {
     private void initPopupWindow() {
         //设置点击图片弹出的菜单
         operateWindow = new PopupWindow();
-        View popupView = getLayoutInflater().inflate(R.layout.pop_up, null);
+        final View popupView = getLayoutInflater().inflate(R.layout.pop_up, null);
         operateWindow.setContentView(popupView);
         operateWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         operateWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -238,6 +238,30 @@ public class MainActivity extends FragmentActivity {
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, PICK_PHOTO_IN_ALBUM);
+            }
+        });
+        //设置保存图片的点击
+        Button save = popupView.findViewById(R.id.save);
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Common.saveImageToGallery(getApplicationContext(), pictureManager.targetBitmap);
+                    }
+                }).start();
+                //先显示Toast，实际上还在保存233333
+                Toast.makeText(MainActivity.this, "图片已保存至本地", Toast.LENGTH_LONG).show();
+                operateWindow.dismiss();
+            }
+        });
+        //设置取消按钮的点击
+        Button cancel = popupView.findViewById(R.id.cancel);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                operateWindow.dismiss();
             }
         });
         //设置获取人脸关键点时的loading画面
@@ -311,6 +335,7 @@ public class MainActivity extends FragmentActivity {
                             for (String effect : Common.EFFECT_SET) {
                                 effectLevel.put(effect, 0);
                             }
+                            seekBar.setProgress(0);
                             //让背景可点击
                             isGettingFaceLandmarks = false;
                             //恢复背景原色
@@ -331,7 +356,7 @@ public class MainActivity extends FragmentActivity {
                         public void run() {
                             isGettingFaceLandmarks = false;
                             linearLayout.setAlpha(1.0f);
-                            Toast.makeText(MainActivity.this, "获取人脸关键点失败(>﹏<)\n 请检查网络连接或者重启APP或者换一张图片┐(─__─)┌", Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this, "获取人脸关键点失败(>﹏<)\n请检查网络连接或者重启APP或者换一张图片┐(─__─)┌", Toast.LENGTH_LONG).show();
                             loadingWindow.dismiss();
                         }
                     });

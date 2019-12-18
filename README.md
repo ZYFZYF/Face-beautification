@@ -3,9 +3,12 @@
     
 ## TODO
    - Android 部分完成
-       - 在Face++ API没有完成请求之前不允许UI操作，或者说显示加载中（或者正在处理图片）
+       - 在Face++ API没有完成请求之前不允许UI操作，或者说显示加载中（或者正在处理图片）完成
+           - 用的是和弹出窗一样的PopupWindow组件
        - 增加自选图片（包括拍照和从相册选取）功能 完成
+           - [Android拍照或从系统相册获取图片](https://www.jianshu.com/p/4c3cff20ebbc)
        - 增加保存图片到本地功能
+           - [Android保存Bitmap到本地图库](https://blog.csdn.net/z1246300949/article/details/50681435)
    - 美白 ×
    - 磨皮 完成
        - [图像算法---磨皮算法研究汇总](https://blog.csdn.net/trent1985/article/details/50496969)
@@ -20,7 +23,7 @@
    - 瘦脸 完成
        - [Android：修图技术之瘦脸效果](https://mp.weixin.qq.com/s?__biz=MzIwMzYwMTk1NA%3D%3D&mid=2247489371&idx=1&sn=0174082ea4a53de46f7880add8141aed)
        - 直接用了bitmap进行操作，没有用drawBitmapMesh，因为速度已经足够快
-       - 选择鼻子中间作为中心，level来控制r\_max，并且level根据脸尺寸进行自适应
+       - 选择鼻子中间作为中心，level来控制r\_max，并且level根据脸尺寸进行自适应（鲁棒到雪人奥利给都可以瘦脸hhh）
    - 口红 完成
         - [Android Canvas之Path操作](https://www.jianshu.com/p/9ad3aaae0c63)
         - 用canvas填充face++拿到的口红边界，然后做个模糊和混合
