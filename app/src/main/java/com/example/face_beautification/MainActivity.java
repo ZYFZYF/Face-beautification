@@ -5,7 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.View;
@@ -21,6 +24,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,6 +46,7 @@ public class MainActivity extends FragmentActivity {
     private Timer timer;
     private TimerTask timerTask;
     private PopupWindow popupWindow;
+    private String photoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +60,9 @@ public class MainActivity extends FragmentActivity {
         initTabHost();
         LinearLayout page1 = (LinearLayout) findViewById(R.id.page1);
         page1.setAlpha(0.5f);
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
 
     }
 
@@ -161,6 +169,9 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                photoPath = getExternalFilesDir("test") + "/test.jpg";
+                System.out.println(photoPath);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(photoPath)));
                 startActivityForResult(intent, TAKE_PHOTO_REQUEST);
             }
         });
@@ -174,7 +185,8 @@ public class MainActivity extends FragmentActivity {
                 Toast.makeText(MainActivity.this, "取消了拍照", Toast.LENGTH_LONG).show();
                 return;
             }
-            Bitmap photo = data.getParcelableExtra("data");
+            //Bitmap photo = data.getParcelableExtra("data");
+            Bitmap photo = BitmapFactory.decodeFile(photoPath);
             setDisplayImage(photo);
             popupWindow.dismiss();
         }
