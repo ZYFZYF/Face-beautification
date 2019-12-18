@@ -5,21 +5,25 @@
     android:orientation="vertical">
 
     <Button
+        android:id="@+id/camera"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/camera"></Button>
 
     <Button
+        android:id="@+id/photo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/photo"></Button>
 
     <Button
+        android:id="@+id/save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/save"></Button>
 
     <Button
+        android:id="@+id/cancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/cancel"></Button>

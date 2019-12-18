@@ -27,12 +27,13 @@
                 <ImageView
                     android:id="@+id/imageView"
                     android:layout_width="match_parent"
-                    android:layout_height="700dp" />
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
                 <SeekBar
                     android:id="@+id/levelSelector"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp" />
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
 
