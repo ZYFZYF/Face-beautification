@@ -8,6 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="MyStyle" parent="@style/Animation.AppCompat.Dialog">
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+
+    <style name="AnotherTheme" parent="@style/Animation.AppCompat.Dialog">
+        <item name="colorPrimary">@android:color/holo_blue_bright</item>
+        <item name="colorPrimaryDark">@android:color/holo_blue_bright</item>
+        <item name="android:textColorPrimary">@android:color/black</item>
+    </style>
+
     <style name="anim_menu_bottombar">
         <item name="android:windowEnterAnimation">@anim/menu_bottombar_in</item>
         <item name="android:windowExitAnimation">@anim/menu_bottombar_out</item>

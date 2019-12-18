@@ -278,7 +278,7 @@ public class MainActivity extends FragmentActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == TAKE_PHOTO_REQUEST) {
             if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(MainActivity.this, "取消了拍照", Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, "取消了拍照", Toast.LENGTH_LONG).show();
                 return;
             }
             //Bitmap photo = data.getParcelableExtra("data");
@@ -288,7 +288,7 @@ public class MainActivity extends FragmentActivity {
         }
         if (requestCode == PICK_PHOTO_IN_ALBUM) {
             if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(MainActivity.this, "点击取消从相册选择", Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, "点击取消从相册选择", Toast.LENGTH_LONG).show();
                 return;
             }
             Uri uri = data.getData();

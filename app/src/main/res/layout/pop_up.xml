@@ -8,24 +8,41 @@
         android:id="@+id/camera"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/camera"></Button>
+        android:background="@drawable/dialog_item_bg_only"
+        android:gravity="center"
+        android:text="@string/camera"
+        android:textColor="#0073FF"
+        android:textSize="18dp"></Button>
 
     <Button
         android:id="@+id/album"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/album"></Button>
+        android:background="@drawable/dialog_item_bg_only"
+        android:gravity="center"
+        android:text="@string/album"
+        android:textColor="#0073FF"
+        android:textSize="18dp"></Button>
 
     <Button
         android:id="@+id/save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/save"></Button>
+        android:layout_marginTop="5dip"
+        android:background="@drawable/dialog_item_bg_only"
+        android:gravity="center"
+        android:text="@string/save"
+        android:textColor="#0073FF"
+        android:textSize="18dp"></Button>
 
     <Button
         android:id="@+id/cancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/cancel"></Button>
+        android:background="@drawable/dialog_item_bg_only"
+        android:gravity="center"
+        android:text="@string/cancel"
+        android:textColor="#0073FF"
+        android:textSize="18dp"></Button>
 
 </LinearLayout>
