@@ -87,6 +87,10 @@ public class FaceLandmark {
         }
     }
 
+    public float getFaceDiagonalLength() {
+        return (float) Math.sqrt(faceSize.x * faceSize.x + faceSize.y * faceSize.y);
+    }
+
     public int getLeftEyePupleRadius() {
         return leftEyePupleRadius;
     }
@@ -233,5 +237,9 @@ public class FaceLandmark {
 //            System.out.printf("%d (%f,%f)\n", cnt++, pos.x, pos.y);
 //        }
         return noseMidline.get(40);
+    }
+
+    public int getFaceArea() {
+        return (int) (faceSize.x * faceSize.y);
     }
 }
