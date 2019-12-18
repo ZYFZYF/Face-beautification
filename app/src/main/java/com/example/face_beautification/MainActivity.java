@@ -1,15 +1,22 @@
 package com.example.face_beautification;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.ContentUris;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.StrictMode;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +28,9 @@ import android.widget.SeekBar;
 import android.widget.TabHost;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
@@ -34,7 +43,14 @@ public class MainActivity extends FragmentActivity {
 //        System.loadLibrary("opencv_java");
 //    }
 
+    //读写权限
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    //请求状态码
+    private static int REQUEST_PERMISSION_CODE = 1;
     final int TAKE_PHOTO_REQUEST = 0;
+    final int PICK_PHOTO_IN_ALBUM = 1;
     HashMap<String, Integer> effectLevel;
     PictureManager pictureManager;
     private ImageView imageView;
@@ -63,6 +79,12 @@ public class MainActivity extends FragmentActivity {
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_PERMISSION_CODE);
+            }
+        }
+
 
     }
 
@@ -164,15 +186,26 @@ public class MainActivity extends FragmentActivity {
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popupWindow.setFocusable(true);
         popupWindow.setAnimationStyle(R.style.anim_menu_bottombar);
+        //设置拍照的点击
         Button camera = popupView.findViewById(R.id.camera);
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                photoPath = getExternalFilesDir("test") + "/test.jpg";
+                photoPath = generatePhotoPath();
                 System.out.println(photoPath);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(photoPath)));
                 startActivityForResult(intent, TAKE_PHOTO_REQUEST);
+            }
+        });
+        //设置从相册选取的点击
+        Button album = popupView.findViewById(R.id.album);
+        album.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, PICK_PHOTO_IN_ALBUM);
             }
         });
     }
@@ -190,9 +223,75 @@ public class MainActivity extends FragmentActivity {
             setDisplayImage(photo);
             popupWindow.dismiss();
         }
+        if (requestCode == PICK_PHOTO_IN_ALBUM) {
+            if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(MainActivity.this, "点击取消从相册选择", Toast.LENGTH_LONG).show();
+                return;
+            }
+            Uri uri = data.getData();
+            String path = uri2path(uri);
+            System.out.println(path);
+            Bitmap photo = BitmapFactory.decodeFile(uri2path(uri));
+            setDisplayImage(photo);
+            popupWindow.dismiss();
+        }
     }
 
     void setDisplayImage(Bitmap bitmap) {
         imageView.setImageBitmap(bitmap);
+    }
+
+    private String generatePhotoPath() {
+        return getExternalFilesDir("images") + "/" + System.currentTimeMillis() + ".jpg";
+    }
+
+    //fit <=4.4
+    private String getImagePath(Uri uri, String selection) {
+        String path = null;
+        Cursor cursor = getContentResolver().query(uri, null, selection, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            }
+
+            cursor.close();
+        }
+        return path;
+    }
+
+    // fit all
+    private String uri2path(Uri uri) {
+        if (DocumentsContract.isDocumentUri(this, uri)) {
+            String docId = DocumentsContract.getDocumentId(uri);
+            if ("com.android.providers.media.documents".equals(uri.getAuthority())) {
+                //Log.d(TAG, uri.toString());
+                String id = docId.split(":")[1];
+                String selection = MediaStore.Images.Media._ID + "=" + id;
+                return getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
+            } else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
+                //Log.d(TAG, uri.toString());
+                Uri contentUri = ContentUris.withAppendedId(
+                        Uri.parse("content://downloads/public_downloads"),
+                        Long.valueOf(docId));
+                return getImagePath(contentUri, null);
+            } else {
+                return null;
+            }
+        } else if ("content".equalsIgnoreCase(uri.getScheme())) {
+            //Log.d(TAG, "content: " + uri.toString());
+            return getImagePath(uri, null);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSION_CODE) {
+            for (int i = 0; i < permissions.length; i++) {
+                Log.i("MainActivity", "申请的权限为：" + permissions[i] + ",申请结果：" + grantResults[i]);
+            }
+        }
     }
 }

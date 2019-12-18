@@ -11,10 +11,10 @@
         android:text="@string/camera"></Button>
 
     <Button
-        android:id="@+id/photo"
+        android:id="@+id/album"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/photo"></Button>
+        android:text="@string/album"></Button>
 
     <Button
         android:id="@+id/save"
