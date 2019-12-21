@@ -23,22 +23,6 @@ public class WhiteningTranslater extends Translater {
     @Override
     Bitmap render(PictureManager pictureManager, Bitmap bitmap) {
         if (level > 0) {
-            //Mat mat = new Mat();
-            //Utils.bitmapToMat(bitmap, mat);
-            //去掉透明通道
-            //Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGBA2BGR);
-            //如果用到了这个效果再做
-                //Imgproc.blur(mat, mat, new Size(level, level));
-                //显示脸部轮廓
-//            List<MatOfPoint> contours = new ArrayList<>();
-//            contours.add(new MatOfPoint(pictureManager.faceLandmark.getFaceContour()));
-//            Imgproc.drawContours(mat, contours, 0, new Scalar(255, 255, 255));
-//            System.out.println(mat.type());
-//            System.out.println(CvType.typeToString(mat.type()));
-//            Mat test = new Mat(mat.size(), CvType.CV_32FC3, new Scalar(0.01 * level / 100, 0.01 * level, 0.01 * level));
-               // mat.convertTo(mat, CvType.CV_32FC3, 1.0 / 255);
-                //Imgproc.accumulate(test, mat);
-
                 int clen=bitmap.getWidth(), rlen=bitmap.getHeight();
                 int pixel;
                 int[] newPixels = new int[rlen * clen];
@@ -59,11 +43,8 @@ public class WhiteningTranslater extends Translater {
                     }
                 }
                 bitmap.setPixels(newPixels, 0, clen,0,0,clen,rlen);
-                //mat.convertTo(mat, CvType.CV_8UC3, 255);
                 return bitmap;
             }
-            //Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2RGBA);
-            //Utils.matToBitmap(mat, bitmap);
         else {
             return bitmap;
         }
