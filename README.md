@@ -10,7 +10,11 @@
            - [Android拍照或从系统相册获取图片](https://www.jianshu.com/p/4c3cff20ebbc)
        - 增加保存图片到本地功能
            - [Android保存Bitmap到本地图库](https://blog.csdn.net/z1246300949/article/details/50681435)
-   - 美白 ×
+   - 美白 完成
+       - 参考Shen-Chuan Tai ; Nai-Ching Wang ; Yi-Ying Chang ; Yen-Cheng Lu《A Two-Stage Contrast Enhancement Algorithm for Digital Images》，利用v(x,y)=log(w(x,y)×(β−1)+1)/log(β)来调整亮度，w(x,y)表示原来的亮度水平，v(x,y)表示调整后的亮度水平
+       - 实现效果使得亮度两端值增强得较弱，中间值增强得较强
+       - openCV实现较慢，改为直接操作Bitmap，速度显著提升
+   
    - 磨皮 完成
        - [图像算法---磨皮算法研究汇总](https://blog.csdn.net/trent1985/article/details/50496969)
        - [opencv 美白磨皮人脸检测](https://blog.csdn.net/zhangqipu000/article/details/53260647)
