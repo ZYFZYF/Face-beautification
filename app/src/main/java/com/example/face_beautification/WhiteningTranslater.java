@@ -35,7 +35,7 @@ public class WhiteningTranslater extends Translater {
                         int b= Color.blue(pixel);
 
                         double brightness=0.299*r+0.587 * g+0.114 * b;
-                        double brightnessIncre = (( (Math.log ( (brightness/255) *(0.2*level-1)+1 ) / Math.log(0.2*level)) )  - brightness/255)*255 ;
+                        double brightnessIncre = (( (Math.log ( (brightness/255) *0.1*level+1 ) / Math.log(0.1*level+1)) )  - brightness/255)*255 ;
                         r = r+(int)brightnessIncre >255 ? 255: r+(int)brightnessIncre;//R
                         g = g+(int)brightnessIncre >255 ? 255: g+(int)brightnessIncre;//G
                         b = b+(int)brightnessIncre >255 ? 255: b+(int)brightnessIncre;//B
