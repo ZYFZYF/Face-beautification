@@ -2,6 +2,7 @@ package com.example.face_beautification;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.util.Log;
 
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
@@ -27,7 +28,6 @@ public class WhiteningTranslater extends Translater {
             //去掉透明通道
             //Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGBA2BGR);
             //如果用到了这个效果再做
-            if (level > 0) {
                 //Imgproc.blur(mat, mat, new Size(level, level));
                 //显示脸部轮廓
 //            List<MatOfPoint> contours = new ArrayList<>();
@@ -45,27 +45,26 @@ public class WhiteningTranslater extends Translater {
 
                 for (int i = 0; i < rlen; i++) {
                     for (int j = 0; j < clen; j++) {
-                        pixel = bitmap.getPixel(i,j);
+                        pixel = bitmap.getPixel(j,i);
                         int r= Color.red(pixel);
                         int g= Color.green(pixel);
                         int b= Color.blue(pixel);
-                        double brightness=0.299*r+0.587 * g+0.114 * b;
-                        double brightnessIncre=Math.log ( brightness *(level-1)+1 ) / Math.log(level)  - brightness ;
-                        r = r+(int)brightnessIncre>255 ? 255: r+(int)brightnessIncre;//R
-                        g = g+(int)brightnessIncre>255 ? 255: g+(int)brightnessIncre;//G
-                        b = b+(int)brightnessIncre>255 ? 255: b+(int)brightnessIncre;//B
-                        newPixels[i * rlen + j] = Color.rgb(r,g,b);
 
+                        double brightness=0.299*r+0.587 * g+0.114 * b;
+                        double brightnessIncre = (( (Math.log ( (brightness/255) *(0.2*level-1)+1 ) / Math.log(0.2*level)) )  - brightness/255)*255 ;
+                        r = r+(int)brightnessIncre >255 ? 255: r+(int)brightnessIncre;//R
+                        g = g+(int)brightnessIncre >255 ? 255: g+(int)brightnessIncre;//G
+                        b = b+(int)brightnessIncre >255 ? 255: b+(int)brightnessIncre;//B
+                        newPixels[i * clen + j] = Color.rgb(r,g,b);
                     }
                 }
                 bitmap.setPixels(newPixels, 0, clen,0,0,clen,rlen);
                 //mat.convertTo(mat, CvType.CV_8UC3, 255);
-
+                return bitmap;
             }
             //Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2RGBA);
             //Utils.matToBitmap(mat, bitmap);
-            return bitmap;
-        } else {
+        else {
             return bitmap;
         }
     }
