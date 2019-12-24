@@ -32,6 +32,11 @@
    - 口红 完成
        - [Android Canvas之Path操作](https://www.jianshu.com/p/9ad3aaae0c63)
        - 用canvas填充face++拿到的口红边界，然后做个模糊和混合
+       
+   - UPDATE 未完成
+       - 口红滑动条bug
+       - release出来的apk一涉及到本地的操作就退出
+       - 报告（项目文档和运行说明）
     
 ## TIPS
    - 不要局限于opencv的处理方式，可以考虑android的canvas，可以直接在bitmap上绘制
