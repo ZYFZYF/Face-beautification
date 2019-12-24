@@ -282,7 +282,17 @@ public class MainActivity extends FragmentActivity {
                 return;
             }
             //Bitmap photo = data.getParcelableExtra("data");
-            Bitmap photo = BitmapFactory.decodeFile(photoPath);
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(photoPath);
+
+            options.inSampleSize = 2;
+
+            // Decode bitmap with inSampleSize set
+            options.inJustDecodeBounds = false;
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
+            Bitmap photo = BitmapFactory.decodeFile(photoPath, options);
+            System.out.println("1111111111111111   " + photo.getByteCount());
             replaceImage(photo);
             operateWindow.dismiss();
         }
@@ -295,6 +305,7 @@ public class MainActivity extends FragmentActivity {
             String path = uri2path(uri);
             System.out.println(path);
             Bitmap photo = BitmapFactory.decodeFile(uri2path(uri));
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!! " + photo.getHeight() + " " + photo.getWidth() + " " + photo.getByteCount());
             replaceImage(photo);
             operateWindow.dismiss();
         }
@@ -356,7 +367,7 @@ public class MainActivity extends FragmentActivity {
                         public void run() {
                             isGettingFaceLandmarks = false;
                             linearLayout.setAlpha(1.0f);
-                            Toast.makeText(MainActivity.this, "获取人脸关键点失败(>﹏<)\n请检查网络连接或者重启APP或者换一张图片┐(─__─)┌", Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this, "未检测到人脸(>﹏<)\n请检查网络连接或者重启APP或者换一张图片┐(─__─)┌", Toast.LENGTH_LONG).show();
                             loadingWindow.dismiss();
                         }
                     });
