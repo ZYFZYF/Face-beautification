@@ -16,7 +16,8 @@ public class PictureManager {
     PictureManager(final Bitmap bitmap, FaceLandmark faceLandmark) {
         this.faceLandmark = faceLandmark;
         originBitmap = bitmap;
-        targetBitmap = null;
+        //targetBitmap = null;
+        targetBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, false);
         //这里要按照顺序添加所有实现了的变换，因为会按照顺序执行一个个变换
         //因为关键点只在最开始获取了一次，所以最后再做会改变关键点的操作，例如瘦脸
         try {

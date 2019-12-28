@@ -33,9 +33,9 @@
        - [Android Canvas之Path操作](https://www.jianshu.com/p/9ad3aaae0c63)
        - 用canvas填充face++拿到的口红边界，然后做个模糊和混合
        
-   - UPDATE 未完成
-       - 口红滑动条bug
-       - release出来的apk一涉及到本地的操作就退出
+   - UPDATE 完成
+       - 口红滑动条bug 实际上并没有，只是因为美白太慢了
+       - release出来的apk一涉及到本地的操作就退出 ~~实际上也没有，我又release了一遍就好了_(:з」∠)_~~ 有的，因为PictureManager的targetBitmap没有初始化，已经修复
        - 报告（项目文档和运行说明）
     
 ## TIPS
