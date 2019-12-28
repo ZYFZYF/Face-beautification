@@ -23,29 +23,28 @@ public class WhiteningTranslater extends Translater {
     @Override
     Bitmap render(PictureManager pictureManager, Bitmap bitmap) {
         if (level > 0) {
-                int clen=bitmap.getWidth(), rlen=bitmap.getHeight();
-                int pixel;
-                int[] newPixels = new int[rlen * clen];
+            int clen = bitmap.getWidth(), rlen = bitmap.getHeight();
+            int pixel;
+            int[] newPixels = new int[rlen * clen];
 
-                for (int i = 0; i < rlen; i++) {
-                    for (int j = 0; j < clen; j++) {
-                        pixel = bitmap.getPixel(j,i);
-                        int r= Color.red(pixel);
-                        int g= Color.green(pixel);
-                        int b= Color.blue(pixel);
+            for (int i = 0; i < rlen; i++) {
+                for (int j = 0; j < clen; j++) {
+                    pixel = bitmap.getPixel(j, i);
+                    int r = Color.red(pixel);
+                    int g = Color.green(pixel);
+                    int b = Color.blue(pixel);
 
-                        double brightness=0.299*r+0.587 * g+0.114 * b;
-                        double brightnessIncre = (( (Math.log ( (brightness/255) *0.1*level+1 ) / Math.log(0.1*level+1)) )  - brightness/255)*255 ;
-                        r = r+(int)brightnessIncre >255 ? 255: r+(int)brightnessIncre;//R
-                        g = g+(int)brightnessIncre >255 ? 255: g+(int)brightnessIncre;//G
-                        b = b+(int)brightnessIncre >255 ? 255: b+(int)brightnessIncre;//B
-                        newPixels[i * clen + j] = Color.rgb(r,g,b);
-                    }
+                    double brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+                    double brightnessIncre = (((Math.log((brightness / 255) * 0.02 * level + 1) / Math.log(0.02 * level + 1))) - brightness / 255) * 255;
+                    r = r + (int) brightnessIncre > 255 ? 255 : r + (int) brightnessIncre;//R
+                    g = g + (int) brightnessIncre > 255 ? 255 : g + (int) brightnessIncre;//G
+                    b = b + (int) brightnessIncre > 255 ? 255 : b + (int) brightnessIncre;//B
+                    newPixels[i * clen + j] = Color.rgb(r, g, b);
                 }
-                bitmap.setPixels(newPixels, 0, clen,0,0,clen,rlen);
-                return bitmap;
             }
-        else {
+            bitmap.setPixels(newPixels, 0, clen, 0, 0, clen, rlen);
+            return bitmap;
+        } else {
             return bitmap;
         }
     }

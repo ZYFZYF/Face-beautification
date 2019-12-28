@@ -61,6 +61,7 @@ public class MainActivity extends FragmentActivity {
     HashMap<String, Integer> effectLevel;
     PictureManager pictureManager;
     private ImageView imageView;
+    private Bitmap initialBitmap;
     private String nowEffect;
     private SeekBar seekBar;
     private TabHost tabHost;
@@ -94,6 +95,7 @@ public class MainActivity extends FragmentActivity {
         handler = new Handler();
         initPopupWindow();
         final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test_12);
+        initialBitmap = bitmap;
         initImageView(bitmap);
         initLevel();
         initSeekBar();
@@ -292,7 +294,7 @@ public class MainActivity extends FragmentActivity {
             options.inJustDecodeBounds = false;
             options.inPreferredConfig = Bitmap.Config.RGB_565;
             Bitmap photo = BitmapFactory.decodeFile(photoPath, options);
-            System.out.println("1111111111111111   " + photo.getByteCount());
+            //replaceImage(initialBitmap);
             replaceImage(photo);
             operateWindow.dismiss();
         }
@@ -305,7 +307,6 @@ public class MainActivity extends FragmentActivity {
             String path = uri2path(uri);
             System.out.println(path);
             Bitmap photo = BitmapFactory.decodeFile(uri2path(uri));
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!! " + photo.getHeight() + " " + photo.getWidth() + " " + photo.getByteCount());
             replaceImage(photo);
             operateWindow.dismiss();
         }
