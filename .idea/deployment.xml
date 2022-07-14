@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="ANM">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/openCVLibrary24136" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="Copy of project-level server 'aiops'">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/openCVLibrary24136" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="datacon">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/openCVLibrary24136" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="datacon (1)">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/openCVLibrary24136" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="dell@166.111.68.233:43233 key">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/openCVLibrary24136" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="docker_debug">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/openCVLibrary24136" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="sava_server">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/openCVLibrary24136" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
